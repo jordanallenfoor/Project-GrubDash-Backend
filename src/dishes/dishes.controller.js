@@ -1,5 +1,5 @@
-const path = require("path");
 const { notDeepStrictEqual } = require("assert");
+const path = require("path");
 
 // Use the existing dishes data
 const dishes = require(path.resolve("src/data/dishes-data"));
@@ -27,7 +27,6 @@ function create(req, res) {
     price: newPrice,
     image_url: newImageUrl,
   };
-
   dishes.push(newDish);
   res.status(201).json({ data: newDish });
 }
@@ -44,7 +43,7 @@ function dishExists(req, res, next) {
 }
 
 function read(req, res, next) {
-  const foundDish = req.locals.dish;
+  const foundDish = res.locals.dish;
   if (foundDish) {
     res.json({ data: foundDish[0] });
   }

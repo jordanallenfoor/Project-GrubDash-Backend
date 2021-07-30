@@ -19,6 +19,7 @@ function orderExists(req, res, next) {
 }
 
 // Id Valid?
+
 function isIdValid(req, res, next) {
   let {
     data: { id },
@@ -42,6 +43,7 @@ function isIdValid(req, res, next) {
 }
 
 // Status Valid?
+
 function isStatusValid(req, res, next) {
   const { data: { status } = {} } = req.body;
 
@@ -66,7 +68,6 @@ function isStatusValid(req, res, next) {
     console.log("ERROR =", error);
   }
 }
-
 function validateCreate(req, res, next) {
   const { deliverTo, mobileNumber, dishes } = req.body.data;
   if (!deliverTo) {
@@ -101,22 +102,20 @@ function validateCreate(req, res, next) {
   next();
 }
 
-// Create
+//CREATE
 function create(req, res) {
   const newOrder = { ...res.locals.order, id: nextId() };
   orders.push(newOrder);
   res.status(201).json({ data: newOrder });
 }
-
-// Read
+//READ
 function read(req, res, next) {
   const foundOrder = res.locals.order;
   if (foundOrder) {
     res.json({ data: foundOrder[0] });
   }
 }
-
-// Update
+//UPDATE
 function update(req, res) {
   const orderId = req.params.orderId;
   let { data: id, deliverTo, mobileNumber, status, dishes } = req.body;
@@ -131,7 +130,7 @@ function update(req, res) {
   return res.json({ data: updatedOrder });
 }
 
-// Destroy
+//DESTROY
 function destroy(req, res, next) {
   const orderId = req.params.orderId;
   const foundOrder = res.locals.order;
@@ -149,7 +148,7 @@ function destroy(req, res, next) {
   });
 }
 
-// List
+//LIST
 function list(req, res) {
   res.json({ data: orders });
 }
