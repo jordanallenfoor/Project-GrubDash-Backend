@@ -42,3 +42,121 @@ function dishExists(req, res, next) {
     next({ status: 404, message: `Dish ${dishId} not found.` });
   }
 }
+
+function read(req, res, next) {
+  const foundDish = req.locals.dish;
+  if (foundDish) {
+    res.json({ data: foundDish[0] });
+  }
+}
+
+function isNameValid(req, res, next) {
+  const { data: name } = req.body;
+  if (
+    req.body.data.name === null ||
+    req.body.data.name === "" ||
+    req.body.data.name === undefined
+  ) {
+    next({ status: 400, message: "Dish must include a name." });
+  }
+  next();
+}
+
+function isDescriptionValid(req, res, next) {
+  const { data: description } = req.body;
+  if (
+    req.body.data.description === null ||
+    req.body.data.description === undefined ||
+    req.body.data.description === ""
+  ) {
+    next({ status: 400, message: "Dish must include a description." });
+  }
+  next();
+}
+
+function isPriceValid(req, res, next) {
+  const { data: price } = req.body;
+  if (
+    req.body.data.price === null ||
+    req.body.data.price === undefined ||
+    req.body.data.price === ""
+  ) {
+    next({ status: 400, message: "Dish must include a price." });
+  }
+  if (typeof req.body.data.price === "number" && req.body.data.price > 0) {
+    return next();
+  } else {
+    next({
+      status: 400,
+      message: `The price must be a number greater than 0.`,
+    });
+  }
+}
+
+function isUrlValid(req, res, next) {
+  const { data: image_url } = req.body;
+  if (
+    req.body.data.image_url === null ||
+    req.body.data.image_url === undefined ||
+    req.body.data.image_url === ""
+  ) {
+    next({ status: 400, message: "Dish must include an image_url." });
+  }
+  next();
+}
+
+function isIdValid(req, res, next) {
+  let {
+    data: { id },
+  } = req.body;
+  const dishId = req.params.dishId;
+  if (
+    req.body.data.id === null ||
+    req.body.data.id === undefined ||
+    req.body.data.id === ""
+  ) {
+    return next();
+  }
+  if (req.body.data.id !== dishId) {
+    next({
+      status: 400,
+      message: `Dish id does not match route id. Dish: ${id}, Route: ${dishId}`,
+    });
+  } else {
+    next();
+  }
+}
+
+function update(req, res) {
+  dishId = req.params.dishId;
+  let {
+    data: { name, description, price, image_url },
+  } = req.body;
+  let updatedDish = {
+    id: dishId,
+    name: req.body.data.name,
+    description: req.body.data.description,
+    price: req.body.data.price,
+    image_url: req.body.data.image_url,
+  };
+  return res.json({ data: updatedDish });
+}
+
+function list(req, res) {
+  res.json({ data: dishes });
+}
+
+module.exports = {
+  list,
+  create: [isNameValid, isDescriptionValid, isPriceValid, isUrlValid, create],
+  read: [dishExists, read],
+  update: [
+    dishExists,
+    isNameValid,
+    isDescriptionValid,
+    isPriceValid,
+    isUrlValid,
+    isIdValid,
+    update,
+  ],
+};
